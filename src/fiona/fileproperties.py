@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from dataclasses import dataclass
 from datetime import datetime
-from datetime import UTC
+from datetime import timezone
 from pathlib import Path
 from stat import filemode
 from typing import Any
@@ -53,4 +53,4 @@ class FileProperties:
         if value is None:
             return None
 
-        return datetime.fromtimestamp(value, tz=UTC).isoformat()
+        return datetime.fromtimestamp(value, tz=timezone.utc).isoformat()
