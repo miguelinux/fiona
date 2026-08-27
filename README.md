@@ -1,8 +1,9 @@
 # fiona
 
 Command-line program that receives an input directory and an output directory.
-It recursively reads file properties from the input directory and writes them to
-`fileproperties.json` in the output directory.
+It recursively reads file properties from the input directory and writes one
+metadata file per input file in the output directory, preserving the same
+directory structure and file names.
 
 ## Usage
 
