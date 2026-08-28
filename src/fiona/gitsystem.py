@@ -8,28 +8,44 @@ class GitSystem:
     def __init__(self, repository_dir: Path) -> None:
         self.repository_dir = repository_dir
 
-    def create_repository(self) -> None:
-        self._run("init")
-        self._run("add", ".")
+    def create_repository(self) -> bool:
+        if not (self.repository_dir / ".git").exists():
+            self._run("init")
+
+        has_commits = self._has_commits()
+
+        self._run("add", "--all")
+        if not self._has_staged_changes():
+            return False
+
+        message = "Update file properties" if has_commits else "Initial commit"
         self._run(
             "-c",
             "user.name=Fiona",
             "-c",
             "user.email=fiona@example.invalid",
             "commit",
-            "--allow-empty",
             "-m",
-            "Initial commit",
+            message,
         )
+        return True
 
-    def _run(self, *args: str) -> None:
+    def _has_commits(self) -> bool:
+        result = self._run("rev-parse", "--verify", "HEAD", check=False)
+        return result.returncode == 0
+
+    def _has_staged_changes(self) -> bool:
+        result = self._run("diff", "--cached", "--quiet", check=False)
+        return result.returncode == 1
+
+    def _run(self, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
         command = ["/usr/bin/git", *args]
 
         try:
-            subprocess.run(  # nosec BB603 subprocess_without_shell_equals_true
+            return subprocess.run(  # nosec BB603 subprocess_without_shell_equals_true
                 command,
                 cwd=self.repository_dir,
-                check=True,
+                check=check,
                 capture_output=True,
                 text=True,
             )

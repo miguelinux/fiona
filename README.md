@@ -4,8 +4,8 @@ Command-line program that receives an input directory and an output directory.
 It recursively reads file properties from the input directory and writes one
 metadata file per input file in the output directory, preserving the same
 directory structure and file names. The output directory is initialized as a Git
-repository and committed with `Initial commit`. A `fiona-stats.txt` file is also
-created in the output directory with the processed files.
+repository on the first run and updated on later runs. Each run commits changed
+metadata files, and `fiona-stats.txt` lists the processed files.
 
 ## Usage
 

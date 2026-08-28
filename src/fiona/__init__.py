@@ -5,6 +5,27 @@ from pathlib import Path
 from fiona.fileproperties import FileProperties
 from fiona.gitsystem import GitSystem
 
+STATS_FILE_NAME = "fiona-stats.txt"
+
+
+def remove_stale_files(output_dir: Path, expected_files: set[Path]) -> None:
+    for path in output_dir.rglob("*"):
+        relative_path = path.relative_to(output_dir)
+        if ".git" in relative_path.parts:
+            continue
+        if path.is_file() and relative_path not in expected_files:
+            path.unlink()
+
+    for path in sorted(output_dir.rglob("*"), reverse=True):
+        relative_path = path.relative_to(output_dir)
+        if ".git" in relative_path.parts:
+            continue
+        if path.is_dir():
+            try:
+                path.rmdir()
+            except OSError:
+                pass
+
 
 def main() -> None:
     parser = ArgumentParser(
@@ -38,6 +59,11 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     files = FileProperties.collect_from_tree(input_dir)
+    expected_files = {Path(file.path) for file in files}
+    expected_files.add(Path(STATS_FILE_NAME))
+
+    remove_stale_files(output_dir, expected_files)
+
     for file in files:
         output_file = output_dir / file.path
         output_file.parent.mkdir(parents=True, exist_ok=True)
@@ -46,7 +72,7 @@ def main() -> None:
             encoding="utf-8",
         )
 
-    stats_file = output_dir / "fiona-stats.txt"
+    stats_file = output_dir / STATS_FILE_NAME
     stats_file.write_text(
         "Files processed: "
         f"{len(files)}\n"
@@ -56,10 +82,11 @@ def main() -> None:
     )
 
     try:
-        GitSystem(output_dir).create_repository()
+        commit_created = GitSystem(output_dir).create_repository()
     except RuntimeError as error:
         parser.exit(1, f"error: {error}\n")
 
     print(f"Input directory: {input_dir}")
     print(f"Output directory: {output_dir}")
     print(f"Files processed: {len(files)}")
+    print(f"Git commit created: {commit_created}")
