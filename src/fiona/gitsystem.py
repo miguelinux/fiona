@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026, Qualcomm Technologies, Inc.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 from __future__ import annotations
 
 import subprocess  # nosec B404 blacklist

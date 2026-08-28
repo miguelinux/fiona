@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2026, Qualcomm Technologies, Inc.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 import json
 from argparse import ArgumentParser
 from pathlib import Path
