@@ -3,6 +3,8 @@ name = "fiona"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 authors = [
     { name = "Miguel Bernal Marin", email = "migubern@qti.qualcomm.com" }
 ]
