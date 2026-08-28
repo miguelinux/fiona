@@ -46,6 +46,15 @@ def main() -> None:
             encoding="utf-8",
         )
 
+    stats_file = output_dir / "fiona-stats.txt"
+    stats_file.write_text(
+        "Files processed: "
+        f"{len(files)}\n"
+        "\n"
+        "Processed files:\n" + "".join(f"{file.path}\n" for file in files),
+        encoding="utf-8",
+    )
+
     try:
         GitSystem(output_dir).create_repository()
     except RuntimeError as error:
