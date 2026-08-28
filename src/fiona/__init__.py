@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 from fiona.fileproperties import FileProperties
+from fiona.gitsystem import GitSystem
 
 
 def main() -> None:
@@ -44,6 +45,11 @@ def main() -> None:
             json.dumps(file.to_dict(), indent=2),
             encoding="utf-8",
         )
+
+    try:
+        GitSystem(output_dir).create_repository()
+    except RuntimeError as error:
+        parser.exit(1, f"error: {error}\n")
 
     print(f"Input directory: {input_dir}")
     print(f"Output directory: {output_dir}")
