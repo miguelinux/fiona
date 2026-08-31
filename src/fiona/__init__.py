@@ -5,6 +5,7 @@
 import json
 from argparse import ArgumentParser
 from pathlib import Path
+from time import perf_counter
 
 from fiona.fileproperties import FileProperties
 from fiona.gitsystem import GitSystem
@@ -31,7 +32,17 @@ def remove_stale_files(output_dir: Path, expected_files: set[Path]) -> None:
                 pass
 
 
+def format_duration(seconds: float) -> str:
+    if seconds < 60:
+        return f"{seconds:.2f} seconds"
+
+    minutes = seconds / 60
+    return f"{minutes:.2f} minutes"
+
+
 def main() -> None:
+    start_time = perf_counter()
+
     parser = ArgumentParser(
         prog="fiona",
         description="Receive an input directory and an output directory.",
@@ -90,7 +101,10 @@ def main() -> None:
     except RuntimeError as error:
         parser.exit(1, f"error: {error}\n")
 
+    elapsed_time = perf_counter() - start_time
+
     print(f"Input directory: {input_dir}")
     print(f"Output directory: {output_dir}")
     print(f"Files processed: {len(files)}")
     print(f"Git commit created: {commit_created}")
+    print(f"Total time: {format_duration(elapsed_time)}")
