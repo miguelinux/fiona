@@ -46,7 +46,7 @@ class FileProperties:
         for path in input_dir.rglob("*"):
             if {".git", ".repo"}.intersection(path.relative_to(input_dir).parts):
                 continue
-            if path.name == ".gitattributes":
+            if path.name in {".gitattributes", ".gitignore"}:
                 continue
             if path.is_file():
                 files.append(cls.from_path(path, input_dir))
