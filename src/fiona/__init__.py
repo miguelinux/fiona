@@ -36,8 +36,9 @@ def format_duration(seconds: float) -> str:
     if seconds < 60:
         return f"{seconds:.2f} seconds"
 
-    minutes = seconds / 60
-    return f"{minutes:.2f} minutes"
+    minutes = seconds // 60
+    sec = int(seconds) % 60
+    return f"{minutes} minutes and {sec} seconds"
 
 
 def main() -> None:
