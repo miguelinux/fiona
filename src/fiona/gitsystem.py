@@ -12,7 +12,7 @@ class GitSystem:
     def __init__(self, repository_dir: Path) -> None:
         self.repository_dir = repository_dir
 
-    def create_repository(self) -> bool:
+    def create_repository(self, commit_message: str) -> bool:
         if not (self.repository_dir / ".git").exists():
             self._run("init")
 
@@ -22,7 +22,7 @@ class GitSystem:
         if not self._has_staged_changes():
             return False
 
-        message = "Update file properties" if has_commits else "Initial commit"
+        message = commit_message if has_commits else "Initial commit"
         self._run(
             "-c",
             "user.name=Fiona",

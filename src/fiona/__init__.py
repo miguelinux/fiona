@@ -64,6 +64,13 @@ def main() -> None:
         type=Path,
         help="Directory to write to",
     )
+    parser.add_argument(
+        "-m",
+        "--message",
+        dest="commit_message",
+        default="Update file properties",
+        help="Commit message to use when changes are committed",
+    )
     args = parser.parse_args()
 
     input_dir = args.input_dir.expanduser().resolve()
@@ -98,7 +105,7 @@ def main() -> None:
     )
 
     try:
-        commit_created = GitSystem(output_dir).create_repository()
+        commit_created = GitSystem(output_dir).create_repository(args.commit_message)
     except RuntimeError as error:
         parser.exit(1, f"error: {error}\n")
 
