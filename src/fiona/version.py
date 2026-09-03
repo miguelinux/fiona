@@ -24,7 +24,7 @@ def _base_version() -> str:
     try:
         return version("fiona")
     except PackageNotFoundError:
-        return "1"
+        return "unknown"
 
 
 def _git_revision() -> str | None:
