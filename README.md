@@ -20,3 +20,15 @@ Example:
 ```sh
 uv run fiona -i ./input -o ./output -m "Update file properties"
 ```
+
+Show the package version:
+
+```sh
+uv run fiona --version
+```
+
+Short form:
+
+```sh
+uv run fiona -v
+```

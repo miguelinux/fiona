@@ -9,6 +9,7 @@ from time import perf_counter
 
 from fiona.fileproperties import FileProperties
 from fiona.gitsystem import GitSystem
+from fiona.version import get_version
 
 STATS_FILE_NAME = "fiona-stats.txt"
 
@@ -70,6 +71,12 @@ def main() -> None:
         dest="commit_message",
         default="Update file properties",
         help="Commit message to use when changes are committed",
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="version",
+        version=f"%(prog)s {get_version()}",
     )
     args = parser.parse_args()
 
