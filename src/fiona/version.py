@@ -17,7 +17,7 @@ def get_version() -> str:
     if git_revision is None:
         return base_version
 
-    return f"{base_version}+g{git_revision}"
+    return f"{git_revision[1:]}"
 
 
 def _base_version() -> str:
@@ -35,7 +35,7 @@ def _git_revision() -> str | None:
 
     try:
         result = subprocess.run(  # nosec B603 subprocess_without_shell_equals_true
-            ["/usr/bin/git", "rev-parse", "--short", "HEAD"],
+            ["/usr/bin/git", "describe", "--tags", "--dirty"],
             cwd=project_dir,
             check=True,
             capture_output=True,
