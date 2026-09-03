@@ -11,11 +11,10 @@ from pathlib import Path
 
 
 def get_version() -> str:
-    base_version = _base_version()
     git_revision = _git_revision()
 
     if git_revision is None:
-        return base_version
+        return _base_version()
 
     return f"{git_revision[1:]}"
 
