@@ -7,7 +7,9 @@ from argparse import ArgumentParser
 from pathlib import Path
 from time import perf_counter
 
+from fiona.fileproperties import DEFAULT_STATS
 from fiona.fileproperties import FileProperties
+from fiona.fileproperties import parse_stats
 from fiona.gitsystem import GitSystem
 from fiona.version import get_version
 
@@ -73,12 +75,24 @@ def main() -> None:
         help="Commit message to use when changes are committed",
     )
     parser.add_argument(
+        "-s",
+        "--stats",
+        default=DEFAULT_STATS,
+        help="Comma-separated file properties to write. Supports path/p, name/n, "
+        "size/s, permissions/e, access/a, modified/m, changed/c, birth/b.",
+    )
+    parser.add_argument(
         "-v",
         "--version",
         action="version",
         version=f"%(prog)s {get_version()}",
     )
     args = parser.parse_args()
+
+    try:
+        selected_stats = parse_stats(args.stats)
+    except ValueError as error:
+        parser.error(str(error))
 
     input_dir = args.input_dir.expanduser().resolve()
     output_dir = args.output_dir.expanduser().resolve()
@@ -98,7 +112,7 @@ def main() -> None:
         output_file = output_dir / file.path
         output_file.parent.mkdir(parents=True, exist_ok=True)
         output_file.write_text(
-            json.dumps(file.to_dict(), indent=2),
+            json.dumps(file.to_dict(selected_stats), indent=2),
             encoding="utf-8",
         )
 
@@ -121,5 +135,6 @@ def main() -> None:
     print(f"Input directory: {input_dir}")
     print(f"Output directory: {output_dir}")
     print(f"Files processed: {len(files)}")
+    print(f"Stats selected: {','.join(selected_stats)}")
     print(f"Git commit created: {commit_created}")
     print(f"Total time: {format_duration(elapsed_time)}")

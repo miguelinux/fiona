@@ -21,6 +21,25 @@ Example:
 uv run fiona -i ./input -o ./output -m "Update file properties"
 ```
 
+Select which properties are written to metadata files with `--stats` or `-s`:
+
+```sh
+uv run fiona -i ./input -o ./output -s path,name,size,changed
+```
+
+The default is `path,name,size,changed`. Supported properties are:
+
+```text
+path,p
+name,n
+size,s
+permissions,e
+access,a
+modified,m
+changed,c
+birth,b
+```
+
 Show the package version:
 
 ```sh
