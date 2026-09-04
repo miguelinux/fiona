@@ -1,0 +1,175 @@
+.\" SPDX-FileCopyrightText: 2026, Qualcomm Technologies, Inc.
+.\"
+.\" SPDX-License-Identifier: BSD-3-Clause
+.TH FIONA 1 "September 2026" "fiona 1" "User Commands"
+.SH NAME
+fiona \- generate file metadata trees and commit them to Git
+.SH SYNOPSIS
+.B fiona
+.B -i
+.I INPUT_DIR
+.B -o
+.I OUTPUT_DIR
+[
+.B -m
+.I MESSAGE
+]
+[
+.B -s
+.I STATS
+]
+.PP
+.B fiona
+.B -v
+.PP
+.B fiona
+.B --version
+.SH DESCRIPTION
+.B fiona
+recursively scans an input directory, collects file metadata, and writes one
+metadata file per input file into an output directory.
+.PP
+The output directory preserves the same relative directory structure and file
+names as the input directory. Each output file contains JSON metadata for the
+corresponding input file.
+.PP
+The output directory is also managed as a Git repository. On the first run,
+.B fiona
+initializes the repository and creates the first commit with the message
+.BR "Initial commit" .
+On later runs, it updates changed metadata files, removes stale metadata files,
+and commits changes using the message passed with
+.BR --message ,
+or
+.B "Update file properties"
+by default.
+.SH OPTIONS
+.TP
+.BR -i , " --input "
+Input directory to scan. This option is required.
+.TP
+.BR -o , " --output "
+Output directory where metadata files, statistics, and the Git repository are
+created. This option is required.
+.TP
+.BR -m , " --message "
+Commit message for update commits. If omitted, the default message is
+.BR "Update file properties" .
+This option does not affect the first commit, which is always
+.BR "Initial commit" .
+.TP
+.BR -s , " --stats "
+Comma-separated list of metadata attributes to write to each metadata file.
+Each attribute can be specified by its full name or short alias.
+.PP
+The default value is:
+.PP
+.RS
+.B path,name,size,changed
+.RE
+.TP
+.BR -v , " --version "
+Print the program version and exit. When the project is inside a Git repository,
+the version includes the short Git revision in the form
+.BR 1+gREVISION .
+.TP
+.BR -h , " --help "
+Show command help and exit.
+.SH STATS
+Supported metadata attributes are:
+.TP
+.BR path , " p"
+Relative path of the file inside the input directory.
+.TP
+.BR name , " n"
+File name without parent directories.
+.TP
+.BR size , " s"
+File size in bytes.
+.TP
+.BR permissions , " e"
+File permissions in symbolic mode format.
+.TP
+.BR access , " a"
+Last access timestamp in UTC ISO 8601 format.
+.TP
+.BR modified , " m"
+Last modification timestamp in UTC ISO 8601 format.
+.TP
+.BR changed , " c"
+Last metadata/status change timestamp in UTC ISO 8601 format.
+.TP
+.BR birth , " b"
+File birth timestamp in UTC ISO 8601 format, if supported by the platform;
+otherwise null.
+.SH GENERATED FILES
+.TP
+.I OUTPUT_DIR/fiona-stats.txt
+Text file containing the total number of processed files and their relative
+paths.
+.TP
+.I OUTPUT_DIR/<relative-input-path>
+JSON metadata file for the corresponding input file.
+.TP
+.I OUTPUT_DIR/.git
+Git repository used to track generated metadata files.
+.SH IGNORED INPUTS
+.B fiona
+does not collect metadata for files inside these directories:
+.PP
+.RS
+.B .git/
+.br
+.B .repo/
+.RE
+.PP
+.B fiona
+also ignores these files by name:
+.PP
+.RS
+.B .gitattributes
+.br
+.B .gitignore
+.RE
+.SH EXAMPLES
+.TP
+Generate metadata using default stats and default update commit message:
+.PP
+.RS
+.B fiona -i ./input -o ./output
+.RE
+.TP
+Generate metadata using a custom update commit message:
+.PP
+.RS
+.B fiona -i ./input -o ./output -m "Refresh metadata"
+.RE
+.TP
+Generate metadata with selected fields:
+.PP
+.RS
+.B fiona -i ./input -o ./output -s path,name,size,changed
+.RE
+.TP
+Generate metadata using short aliases:
+.PP
+.RS
+.B fiona -i ./input -o ./output -s p,n,s,c
+.RE
+.TP
+Show version:
+.PP
+.RS
+.B fiona -v
+.RE
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+Failure, including invalid input directory, invalid stats option, or Git errors.
+.SH AUTHOR
+Miguel Bernal Marin
+.SH LICENSE
+BSD-3-Clause
